@@ -7,6 +7,14 @@ typeattribute zygisk_file mlstrustedobject
 allow domain zygisk_file dir {search getattr}
 allow domain zygisk_file sock_file {read write getattr open}
 
+# Normally the injected library is labelled system_file, which zygote and system_server
+# already read and execute. When the /dev work directory cannot be relabelled, zygisk-init.sh
+# falls back to a tmpfs mounted with a fixed zygisk_file context, so the whole directory --
+# library included -- becomes zygisk_file. These let the two injection targets load it from
+# there. They go unused on the normal path, where the library is system_file.
+allow zygote zygisk_file file {getattr open read execute map}
+allow system_server zygisk_file file {getattr open read execute map}
+
 # Late load injects a system_server that is already running, and the injected library
 # pings the daemon before any mode-specific work, returning when that fails. It connects
 # as u:r:system_server:s0, so it needs the socket file and the listening socket. The
