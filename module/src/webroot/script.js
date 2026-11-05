@@ -1,4 +1,7 @@
-const PROP_PATH = "/data/adb/nyazygisk/module.prop";
+// Runtime module.prop lives in the daemon work directory, which the monitor keeps on the
+// /dev tmpfs (see workDirectory in build.gradle.kts). config.prop below stays under
+// /data/adb/nyazygisk, where it persists across reboots.
+const PROP_PATH = "/dev/nyazygisk/module.prop";
 const CONFIG_PATH = "/data/adb/nyazygisk/config.prop";
 const CONFIG_DIR = "/data/adb/nyazygisk";
 const PACKAGES_LIST_PATH = "/data/system/packages.list";

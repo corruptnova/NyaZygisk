@@ -23,7 +23,14 @@ val minKsuVersion by extra(10940)
 val minKsudVersion by extra(11425)
 val maxKsuVersion by extra(50000)
 val minMagiskVersion by extra(26402)
-val workDirectory by extra("/data/adb/nyazygisk")
+// The daemon runtime directory (control socket, injected libzygisk.so, runtime
+// module.prop). It lives on the pre-existing /dev tmpfs, not under /data/adb, so that
+// zygote and system_server never traverse an adb_data_file-labelled path to reach it.
+// A zygote -> adb_data_file:dir search edge is a DirtySepolicy signature; keeping the
+// runtime directory on /dev removes the need for that grant entirely. Persistent WebUI
+// settings (config.prop) deliberately stay under /data/adb/nyazygisk -- they are read by
+// the root daemon and the WebUI only, never traversed by zygote, and must survive reboot.
+val workDirectory by extra("/dev/nyazygisk")
 val updateJson by extra("https://www.nkbe.top/nyazygisk/zygisk.json")
 
 val androidMinSdkVersion by extra(25)

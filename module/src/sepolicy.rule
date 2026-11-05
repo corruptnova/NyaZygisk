@@ -21,7 +21,16 @@ allow zygote zygote capability sys_chroot
 allow zygote su dir search
 allow zygote su {lnk_file file} read
 
-allow domain adb_data_file dir search
+# The daemon runtime directory sits on the /dev tmpfs (see workDirectory in
+# build.gradle.kts). Reaching the control socket and the injected libzygisk.so means
+# traversing /dev, which is labelled u:object_r:device:s0. The runtime directory itself is
+# relabelled to system_file by zygisk-init.sh, which zygote and system_server already read
+# and execute from, so only the parent /dev search needs a grant here. This replaces the
+# former `allow domain adb_data_file dir search`, whose zygote -> adb_data_file:dir search
+# edge is a DirtySepolicy signature. device:dir search is mundane (every domain opens
+# /dev nodes) and is not treated as a dirty-policy marker. Base policy very likely grants
+# it already, so this is defensive -- but it must not regress injection if it does not.
+allow domain device dir search
 allow zygote zygote process execmem
 allow system_server system_server process execmem
 allow zygote tmpfs file *
