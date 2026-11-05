@@ -39,7 +39,15 @@ val releaseFlags = arrayOf(
     "-Wno-unused", "-Wno-unused-parameter",
     "-fvisibility=hidden", "-fvisibility-inlines-hidden",
     "-fno-unwind-tables", "-fno-asynchronous-unwind-tables",
-    "-ffunction-sections", "-fdata-sections",
+    "-ffunction-sections", "-fdata-sections"
+)
+
+// Link-only flags. These must NOT be added to cFlags/cppFlags: those populate
+// CMAKE_C(XX)_FLAGS, which clang also receives on every compile step, where a -Wl, flag is
+// an unused input and draws one -Wunused-command-line-argument warning per source file (it
+// was ~2300 across the release build). They are handed to CMake as a list and applied with
+// add_link_options() against our own link targets only -- see loader/src/CMakeLists.txt.
+val releaseLinkFlags = arrayOf(
     "-Wl,--exclude-libs,ALL", "-Wl,--gc-sections", "-Wl,--icf=all", "-Wl,--strip-all", "-Wl,--pack-dyn-relocs=android"
 )
 
@@ -78,6 +86,7 @@ android {
                 cFlags += releaseFlags
                 cppFlags += releaseFlags
                 arguments += "-DZKSU_VERSION=$verName-$verCode-$commitHash-release"
+                arguments += "-DLOADER_EXTRA_LINK_FLAGS=${releaseLinkFlags.joinToString(";")}"
             }
         }
     }

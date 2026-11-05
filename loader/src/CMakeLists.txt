@@ -9,6 +9,15 @@ add_definitions(-DZKSU_VERSION=\"${ZKSU_VERSION}\")
 
 add_subdirectory(external)
 
+# Release-only link optimisations, supplied by loader/build.gradle.kts as a ;-separated
+# list. add_link_options keeps them on the link step only (never on compiles, which would
+# warn -Wunused-command-line-argument) and, placed after add_subdirectory(external), applies
+# them to our own targets below but not to the vendored code in external/. It appends to the
+# flags the NDK toolchain already sets rather than replacing them.
+if(DEFINED LOADER_EXTRA_LINK_FLAGS)
+    add_link_options(${LOADER_EXTRA_LINK_FLAGS})
+endif()
+
 aux_source_directory(common COMMON_SRC_LIST)
 add_library(common STATIC ${COMMON_SRC_LIST})
 target_include_directories(common PRIVATE include external/lzma)

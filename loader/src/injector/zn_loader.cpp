@@ -105,6 +105,7 @@ void loadAllModules(unsigned char connect_retry) {
             if (via_system) system_loaded++;
         }
     }
+    LOGI("ZN: loaded %zu module(s) (%zu via system loader)", loaded_count, system_loaded);
 
     // Batch the cleanup after the whole plan is processed, same as the regular Zygisk
     // module path does once for every module instead of per-module. Custom-linker

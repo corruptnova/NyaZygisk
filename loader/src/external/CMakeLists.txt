@@ -1,5 +1,12 @@
 project(external)
 
+# Vendored third-party code (lsplt, bytehook, dobby, rv64hook, lzma). It is not maintained
+# in this repo, so compiling it under the loader's -Wall -Wextra (inherited from
+# CMAKE_CXX_FLAGS) only produces noise -- it accounted for the bulk of the non-linker
+# warnings (reorder-ctor, sign-compare, unused-parameter, ...). Silence warnings for this
+# subtree only; our own targets outside external/ keep full warnings.
+add_compile_options(-w)
+
 option(LSPLT_BUILD_SHARED OFF)
 add_subdirectory(lsplt/lsplt/src/main/jni)
 
